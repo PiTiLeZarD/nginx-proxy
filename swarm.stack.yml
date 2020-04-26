@@ -7,7 +7,7 @@ services:
             mode: global
         build:
             context: .
-        image: test-proxy:1.0
+        image: pitilezard/nginx-proxy-swarm:1.18.0
         networks:
             - proxy
         ports:
