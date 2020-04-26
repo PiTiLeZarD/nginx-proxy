@@ -15,7 +15,12 @@ if not os.path.isfile(SWARM_CONFIG_FILE):
 
 nginx_config = []
 swarm_config = parse(SWARM_CONFIG_FILE)['config']
-nodes = [f['parsed'] for f in swarm_config[1:-1]]
+nodes = [f['parsed'] for f in swarm_config if 'node.conf.d' in f['file'] and 'swarm.conf' not in f['file']]
+
+def servertuple(statement):
+    server_name = [s['args'][0] for s in statement['block'] if s['directive'] == 'server_name'][0]
+    listen = ['/'.join(s['args']) for s in statement['block'] if s['directive'] == 'listen'][0]
+    return (server_name, listen)
 
 for node in nodes:
     for statement in node:
@@ -29,16 +34,11 @@ for node in nodes:
             if statement['args'][0] in all_upstream:
                 continue
         if statement['directive'] == 'server':
-            server_name = [
-                s['args'][0]
-                for s in statement['block'] if s['directive'] == 'server_name'
-            ][0]
-            all_server_names = [
-                sl['args'][0]
+            all_servers = [
+                servertuple(s)
                 for s in nginx_config if s['directive'] == 'server'
-                for sl in s['block'] if sl['directive'] == 'server_name'
             ]
-            if server_name in all_server_names:
+            if servertuple(statement) in all_servers:
                 continue
         nginx_config.append(statement)
 
