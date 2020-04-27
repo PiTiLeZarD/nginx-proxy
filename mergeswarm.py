@@ -14,32 +14,38 @@ if not os.path.isfile(SWARM_CONFIG_FILE):
         f.write("http { include ./*.conf; }")
 
 nginx_config = []
+cache = []
 swarm_config = parse(SWARM_CONFIG_FILE)['config']
 nodes = [f['parsed'] for f in swarm_config if 'node.conf.d' in f['file'] and 'swarm.conf' not in f['file']]
 
-def servertuple(statement):
-    server_name = [s['args'][0] for s in statement['block'] if s['directive'] == 'server_name'][0]
-    listen = ['/'.join(s['args']) for s in statement['block'] if s['directive'] == 'listen'][0]
-    return (server_name, listen)
+
+def get_sub_statements(statement, directive):
+    for sub_statement in statement['block']:
+        if sub_statement['directive'] == directive:
+            yield sub_statement
+
+
+def get_sub_statement(statement, directive):
+    return list(get_sub_statements(statement, directive))[0]
+
+
+def serialise_statement(statement):
+    out = statement['directive']
+    out = "{0}={1}".format(out, ";".join(statement['args']))
+    if statement['directive'] == 'server':
+        server_name = get_sub_statement(statement, 'server_name')
+        listen = get_sub_statement(statement, 'listen')
+        out = "{0}[{1}/{2}]".format(out, serialise_statement(server_name), serialise_statement(listen))
+    return out
+
 
 for node in nodes:
     for statement in node:
-        if statement in nginx_config:
+        serialised = serialise_statement(statement)
+        if serialised in cache:
             continue
-        if statement['directive'] == 'upstream':
-            all_upstream = [
-                s['args'][0]
-                for s in nginx_config if s['directive'] == 'upstream'
-            ]
-            if statement['args'][0] in all_upstream:
-                continue
-        if statement['directive'] == 'server':
-            all_servers = [
-                servertuple(s)
-                for s in nginx_config if s['directive'] == 'server'
-            ]
-            if servertuple(statement) in all_servers:
-                continue
+
+        cache.append(serialised)
         nginx_config.append(statement)
 
 with open(NGINX_OUTPUT, 'w') as f:
