@@ -1,3 +1,3 @@
-swarmmerge: while true; do ls -d /etc/nginx/node.conf.d/*.conf | entr -d python3 /app/mergeswarm.py; done
+cron: cron -f
 dockergen: docker-gen -watch /app/nginx.tmpl /etc/nginx/node.conf.d/${NODE_HOSTNAME:-`hostname`}.conf
 nginx: nginx

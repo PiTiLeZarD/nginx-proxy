@@ -2,12 +2,15 @@ FROM nginx:1.18.0
 MAINTAINER Jonathan Adami <contact@jadami.com>
 LABEL creator="Jason Wilder mail@jasonwilder.com"
 
-# Install python with crossplane, wget, entr and install/updates certificates
+COPY ./crontab /etc/cron.d/root
+COPY ./run-cronjob.sh /usr/local/bin/run-cronjob
+
+# Install python with crossplane, wget, cron and install/updates certificates
 RUN apt-get update \
  && apt-get install -y -q --no-install-recommends \
     ca-certificates \
     wget \
-    entr \
+    cron \
     python3 python3-pip \
  && pip3 install crossplane \
  && apt-get purge -y python3-pip \

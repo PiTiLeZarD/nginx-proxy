@@ -12,8 +12,8 @@ I customised it to my needs. Which are:
  - Every node generate their config as usual, except they do it in a different folder (/etc/nginx/node.conf.d/)
  - the nginx.tmpl is using service_name instead of IP
  - The proxy is deployed globally (one instance per node)
- - Everytime a new file is added to the node.conf.d or everytime any file in this directory is updated, (entr)[http://eradman.com/entrproject/] will run a python script
- - That python script combines all configs into one that is /etc/nginx/conf.d/default.conf using (crossplane)[https://github.com/nginxinc/crossplane]
+ - A cron will run periodically to check if anything has changed and run a python script
+ - That python script combines all configs into one that is /etc/nginx/conf.d/default.conf using (crossplane)[https://github.com/nginxinc/crossplane] and reload nginx
 
 For this to work, all you need is a way to share data between node. It could be a volume driver or anything. I'm using
 azure, so I have a shared directory on all nodes (which also contains my static files) so I bind /etc/nginx/node.conf.d/
