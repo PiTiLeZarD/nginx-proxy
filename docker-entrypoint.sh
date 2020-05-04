@@ -32,7 +32,7 @@ if [ "$socketMissing" = 1 -a "$1" = forego -a "$2" = start -a "$3" = '-r' ]; the
 fi
 
 # take docker environment variables and make them available to crons
-touch /cron_env.sh && sudo chmod 666 /cron_env.sh
+touch /cron_env.sh && chmod 666 /cron_env.sh
 printenv | awk -F= '{printf "export %s=\"%s\"\n", $1, $2}' > /cron_env.sh
 
 exec "$@"
