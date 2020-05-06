@@ -21,6 +21,12 @@ in the shared directory, all nodes add their files, all proxy will regenerate th
 When a new node joins, entr will trigger in each node and the new configuration is generated. If you rebalance your swarm,
 docker-gen will trigger, that node's config will be updated which in turns triggers entr and so on.
 
+If you want your node.conf.d/ files to have the host name instead of the container ID to ease debugging, you can add this environment variable:
+```
+    environment:
+        - NODE_HOSTNAME={{.Node.Hostname}}
+```
+
 ## Override root location
 
 You can set `LOCATION_PATH=xxx` (eg: "~ \.php$") and use the vhost.d/default or vhost.d/{VIRTUAL_HOST} to add:
