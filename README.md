@@ -29,7 +29,8 @@ If you want your node.conf.d/ files to have the host name instead of the contain
 
 ## Override root location
 
-You can set `LOCATION_PATH=xxx` (eg: "~ \.php$") and use the vhost.d/default or vhost.d/{VIRTUAL_HOST} to add:
+You can set `LOCATION_PATH=xxx`on either the proxy for all containers or on the container itself (eg: "~ \.php$") and
+use the vhost.d/default or vhost.d/{VIRTUAL_HOST} to add:
 ```
 location / {
     try_files $uri /index.php?$query_string;
