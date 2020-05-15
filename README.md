@@ -27,6 +27,10 @@ If you want your node.conf.d/ files to have the host name instead of the contain
         - NODE_HOSTNAME={{.Node.Hostname}}
 ```
 
+## Entrypoint extentions
+
+If you provide /app/docker-entrypoint-ext.sh it will be loaded before starting forego
+
 ## Override root location
 
 You can set `LOCATION_PATH=xxx`on either the proxy for all containers or on the container itself (eg: "~ \.php$") and

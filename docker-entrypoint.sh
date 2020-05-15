@@ -35,4 +35,9 @@ fi
 touch /cron_env.sh && chmod 666 /cron_env.sh
 printenv | awk -F= '{printf "export %s=\"%s\"\n", $1, $2}' > /cron_env.sh
 
+if [[ -f /app/docker-entrypoint-ext.sh ]]; then
+	echo "Loading entrypoint extentions"
+	source /app/docker-entrypoint-ext.sh
+fi
+
 exec "$@"
