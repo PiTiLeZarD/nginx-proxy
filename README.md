@@ -3,17 +3,18 @@
 This repository is a fork of the very well known [jwilder/nginx-proxy](https://github.com/nginx-proxy/nginx-proxy)
 
 I customised it to my needs. Which are:
- - Provide an override for location /
- - While using fastcgi, nginx serves static files directly instead of passing them along
- - Multi node, Multi container swarm config
+
+-   Provide an override for location /
+-   While using fastcgi, nginx serves static files directly instead of passing them along
+-   Multi node, Multi container swarm config
 
 ## How did I solve the swarm situation
 
- - Every node generate their config as usual, except they do it in a different folder (/etc/nginx/node.conf.d/)
- - the nginx.tmpl is using service_name instead of IP
- - The proxy is deployed globally (one instance per node)
- - A cron will run periodically to check if anything has changed and run a python script
- - That python script combines all configs into one that is /etc/nginx/conf.d/default.conf using (crossplane)[https://github.com/nginxinc/crossplane] and reload nginx
+-   Every node generate their config as usual, except they do it in a different folder (/etc/nginx/node.conf.d/)
+-   the nginx.tmpl is using service_name instead of IP
+-   The proxy is deployed globally (one instance per node)
+-   A cron will run periodically to check if anything has changed and run a python script
+-   That python script combines all configs into one that is /etc/nginx/conf.d/default.conf using (crossplane)[https://github.com/nginxinc/crossplane] and reload nginx
 
 For this to work, all you need is a way to share data between node. It could be a volume driver or anything. I'm using
 azure, so I have a shared directory on all nodes (which also contains my static files) so I bind /etc/nginx/node.conf.d/
@@ -22,6 +23,7 @@ When a new node joins, entr will trigger in each node and the new configuration 
 docker-gen will trigger, that node's config will be updated which in turns triggers entr and so on.
 
 If you want your node.conf.d/ files to have the host name instead of the container ID to ease debugging, you can add this environment variable:
+
 ```
     environment:
         - NODE_HOSTNAME={{.Node.Hostname}}
@@ -33,8 +35,9 @@ If you provide /app/docker-entrypoint-ext.sh it will be loaded before starting f
 
 ## Override root location
 
-You can set `LOCATION_PATH=xxx`on either the proxy for all containers or on the container itself (eg: "~ \.php$") and
+You can set `LOCATION_PATH=xxx`on either the proxy for all containers or on the container itself (eg: "~ \.php\$") and
 use the vhost.d/default or vhost.d/{VIRTUAL_HOST} to add:
+
 ```
 location / {
     try_files $uri /index.php?$query_string;
@@ -66,3 +69,16 @@ In combination with LOCATION_PATH override you can skip sending queries to the c
 
 Be aware that if using FastCGI you will also have to explicitly set your VIRTUAL_ROOT.
 
+## Server Options
+
+Since we're working in a swarm and the upstreams are networks with possibly many replicas, you migh want to
+disable max_fails for nginx so even if one container fails, nginx keeps sending requests on that network.
+
+A new environment variable which is either applied on the service or on the proxy as default is available:
+
+```
+        environment:
+            - SERVER_OPTIONS=max_fails=0
+```
+
+This will essentially tell nginx, don't bother, keep sending!
