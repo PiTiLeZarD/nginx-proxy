@@ -1,7 +1,6 @@
-version: '3.8'
+version: "3.8"
 
 services:
-
     proxy:
         deploy:
             mode: global
@@ -14,6 +13,7 @@ services:
             - "80:80"
         environment:
             - NODE_HOSTNAME={{.Node.Hostname}}
+            - SERVER_OPTIONS=max_fails=0
         volumes:
             - /var/run/docker.sock:/tmp/docker.sock:ro
             - /tmp/proxyconf/:/etc/nginx/node.conf.d/
@@ -27,7 +27,6 @@ services:
         environment:
             - VIRTUAL_HOST=1.whoami.local
 
-
     whoami2:
         deploy:
             replicas: 2
@@ -36,7 +35,6 @@ services:
             - proxy
         environment:
             - VIRTUAL_HOST=2.whoami.local
-
 
     whoami3:
         deploy:
