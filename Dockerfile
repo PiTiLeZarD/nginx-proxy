@@ -1,4 +1,4 @@
-FROM nginx:1.19.0@sha256:0efad4d09a419dc6d574c3c3baacb804a530acd61d5eba72cb1f14e1f5ac0c8f
+FROM nginx:1.19.1@sha256:8ff4598873f588ca9d2bf1be51bdb117ec8f56cdfd5a81b5bb0224a61565aa49
 MAINTAINER Jonathan Adami <contact@jadami.com>
 LABEL creator="Jason Wilder mail@jasonwilder.com"
 
@@ -38,6 +38,10 @@ COPY network_internal.conf /etc/nginx/
 
 COPY . /app/
 WORKDIR /app/
+
+# nginx healthcheck
+COPY healthcheck.conf /etc/nginx/conf.d
+HEALTHCHECK CMD /app/nginx-healthcheck.sh
 
 ENV DOCKER_HOST unix:///tmp/docker.sock
 
