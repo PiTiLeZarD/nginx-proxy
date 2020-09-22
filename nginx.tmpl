@@ -70,6 +70,9 @@
 	{{ end }}
 {{ end }}
 
+# don't send the nginx version number in error pages and Server header
+server_tokens off;
+
 # If we receive X-Forwarded-Proto, pass it through; otherwise, pass along the
 # scheme used to connect to this server
 map $http_x_forwarded_proto $proxy_x_forwarded_proto {
