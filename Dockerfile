@@ -1,6 +1,9 @@
-FROM nginx:1.19.5@sha256:99d0a53e3718cef59443558607d1e100b325d6a2b678cd2a48b05e5e22ffeb49
+FROM nginx:1.19.5@sha256:e0f65235cc7bca84baf18bb5146faa7413225bfd1013b7c72f0b85b153deccb6
 MAINTAINER Jonathan Adami <contact@jadami.com>
 LABEL creator="Jason Wilder mail@jasonwilder.com"
+
+ENV DOCKER_GEN_VERSION=0.7.4 \
+    DOCKER_HOST=unix:///tmp/docker.sock
 
 COPY ./crontab /etc/cron.d/root
 COPY ./run-cronjob.sh /usr/local/bin/run-cronjob
@@ -22,14 +25,14 @@ RUN apt-get update \
 RUN echo "daemon off;" >> /etc/nginx/nginx.conf \
  && sed -i 's/worker_processes  1/worker_processes  auto/' /etc/nginx/nginx.conf \
  && mkdir /etc/nginx/node.conf.d \
+ && mkdir /etc/nginx/certs \
  && echo "http { include ./*.conf; }" > /etc/nginx/node.conf.d/swarm.conf
 
 # Install Forego
 ADD https://github.com/jwilder/forego/releases/download/v0.16.1/forego /usr/local/bin/forego
 RUN chmod u+x /usr/local/bin/forego
 
-ENV DOCKER_GEN_VERSION 0.7.4
-
+# Install Dockergen
 RUN wget https://github.com/jwilder/docker-gen/releases/download/$DOCKER_GEN_VERSION/docker-gen-linux-amd64-$DOCKER_GEN_VERSION.tar.gz \
  && tar -C /usr/local/bin -xvzf docker-gen-linux-amd64-$DOCKER_GEN_VERSION.tar.gz \
  && rm /docker-gen-linux-amd64-$DOCKER_GEN_VERSION.tar.gz
@@ -42,8 +45,6 @@ WORKDIR /app/
 # nginx healthcheck
 COPY healthcheck.conf /etc/nginx/conf.d
 HEALTHCHECK CMD /app/nginx-healthcheck.sh
-
-ENV DOCKER_HOST unix:///tmp/docker.sock
 
 VOLUME ["/etc/nginx/static_files", "/etc/nginx/node.conf.d"]
 
