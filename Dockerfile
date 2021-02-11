@@ -5,8 +5,8 @@ LABEL creator="Jason Wilder mail@jasonwilder.com"
 ENV DOCKER_GEN_VERSION=0.7.4 \
     DOCKER_HOST=unix:///tmp/docker.sock
 
-COPY ./crontab /etc/cron.d/root
-COPY ./run-cronjob.sh /usr/local/bin/run-cronjob
+COPY ./crons/crontab /etc/cron.d/root
+COPY ./crons/run-cronjob.sh /usr/local/bin/run-cronjob
 
 # Install python with crossplane, wget, cron and install/updates certificates
 RUN apt-get update \
@@ -22,6 +22,8 @@ RUN apt-get update \
  && rm -r /var/lib/apt/lists/*
 
 # Configure Nginx and apply fix for very long server names
+COPY ./nginx/network_internal.conf /etc/nginx/
+COPY ./nginx/healthcheck.conf /etc/nginx/conf.d
 RUN echo "daemon off;" >> /etc/nginx/nginx.conf \
  && sed -i 's/worker_processes  1/worker_processes  auto/' /etc/nginx/nginx.conf \
  && mkdir /etc/nginx/node.conf.d \
@@ -37,16 +39,11 @@ RUN wget https://github.com/jwilder/docker-gen/releases/download/$DOCKER_GEN_VER
  && tar -C /usr/local/bin -xvzf docker-gen-linux-amd64-$DOCKER_GEN_VERSION.tar.gz \
  && rm /docker-gen-linux-amd64-$DOCKER_GEN_VERSION.tar.gz
 
-COPY network_internal.conf /etc/nginx/
 
-COPY . /app/
+COPY ./app/ /app/
 WORKDIR /app/
 
-# nginx healthcheck
-COPY healthcheck.conf /etc/nginx/conf.d
 HEALTHCHECK CMD /app/nginx-healthcheck.sh
-
 VOLUME ["/etc/nginx/static_files", "/etc/nginx/node.conf.d"]
-
 ENTRYPOINT ["/app/docker-entrypoint.sh"]
 CMD ["forego", "start", "-r"]

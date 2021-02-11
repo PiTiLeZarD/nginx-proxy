@@ -1,8 +1,8 @@
 version: "2"
 services:
-    nginx-proxy:
-        image: pitilezard/nginx-proxy-swarm:1.19.6
-        container_name: nginx-proxy
+    proxy:
+        image: pitilezard/nginx-proxy-swarm:1.19.6.1
+        container_name: proxy
         build:
             context: .
         ports:
