@@ -255,7 +255,7 @@ upstream {{ $upstream_name }} {
 {{ $vhostCert := trimSuffix ".crt" $vhostCert }}
 {{ $vhostCert := trimSuffix ".key" $vhostCert }}
 
-{{ $cert := (coalesce $default_ssl_certname $vhostCert) }}
+{{ $cert := (coalesce $vhostCert $default_ssl_certname) }}
 
 {{ $is_https := (and (ne $https_method "nohttps") (ne $cert "") (exists (printf "/etc/nginx/certs/%s.crt" $cert)) (exists (printf "/etc/nginx/certs/%s.key" $cert))) }}
 
@@ -417,6 +417,7 @@ server {
 	listen [::]:{{ $external_https_port }} ssl http2 {{ $default_server }};
 	{{ end }}
 	{{ $access_log }}
+
 	return 500;
 
 	ssl_certificate /etc/nginx/certs/default.crt;
