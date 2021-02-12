@@ -1,4 +1,4 @@
-FROM nginx:1.19.6@sha256:13e4551010728646aa7e1b1ac5313e04cf75d051fa441396832fcd6d600b5e71
+FROM nginx:1.19.6@sha256:1a53eb723d17523512bd25c27299046cfa034cce309f4ed330c943a304513f59
 MAINTAINER Jonathan Adami <contact@jadami.com>
 LABEL creator="Jason Wilder mail@jasonwilder.com"
 
