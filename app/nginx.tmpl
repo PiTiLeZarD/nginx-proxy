@@ -2,7 +2,7 @@
 
 {{ $default_location_path := coalesce $CurrentContainer.Labels.LOCATION_PATH "/" }}
 {{ $default_server_options := coalesce $CurrentContainer.Labels.SERVER_OPTIONS "" }}
-{{ $default_cert_name := coalesce $CurrentContainer.Labels.CERT_NAME "" }}
+{{ $default_ssl_certname := coalesce $CurrentContainer.Labels.DEFAULT_SSL_CERTNAME "" }}
 {{ $external_http_port := coalesce $CurrentContainer.Labels.HTTP_PORT "80" }}
 {{ $external_https_port := coalesce $CurrentContainer.Labels.HTTPS_PORT "443" }}
 
@@ -248,9 +248,6 @@ upstream {{ $upstream_name }} {
 {{/* Get the LOCATION_PATH By containers */}}
 {{ $location_path := or (first (groupByKeys $containers "Labels.LOCATION_PATH")) $default_location_path }}
 
-{{/* Get the first cert name defined by containers w/ the same vhost */}}
-{{ $certName := or (first (groupByKeys $containers "Labels.CERT_NAME")) $default_cert_name }}
-
 {{/* Get the best matching cert  by name for the vhost. */}}
 {{ $vhostCert := (closest (dir "/etc/nginx/certs") (printf "%s.crt" $host))}}
 
@@ -258,8 +255,7 @@ upstream {{ $upstream_name }} {
 {{ $vhostCert := trimSuffix ".crt" $vhostCert }}
 {{ $vhostCert := trimSuffix ".key" $vhostCert }}
 
-{{/* Use the cert specified on the container or fallback to the best vhost match */}}
-{{ $cert := (coalesce $certName $vhostCert) }}
+{{ $cert := (coalesce $default_ssl_certname $vhostCert) }}
 
 {{ $is_https := (and (ne $https_method "nohttps") (ne $cert "") (exists (printf "/etc/nginx/certs/%s.crt" $cert)) (exists (printf "/etc/nginx/certs/%s.key" $cert))) }}
 

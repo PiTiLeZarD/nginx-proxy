@@ -1,5 +1,6 @@
 FROM nginx:1.19.6@sha256:1a53eb723d17523512bd25c27299046cfa034cce309f4ed330c943a304513f59
 MAINTAINER Jonathan Adami <contact@jadami.com>
+LABEL maintainer=Jonathan Adami <contact@jadami.com>
 LABEL creator="Jason Wilder mail@jasonwilder.com"
 
 ENV DOCKER_GEN_VERSION=0.7.4 \
