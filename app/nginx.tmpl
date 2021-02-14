@@ -227,6 +227,10 @@ upstream {{ $upstream_name }} {
 {{ $default_host := or ($CurrentContainer.Labels.DEFAULT_HOST) "" }}
 {{ $default_server := index (dict $host "" $default_host "default_server") $host }}
 
+
+{{/* Get the DEFAULT_SUFFIX defined by containers */}}
+{{ $default_suffix := or (first (groupByKeys $containers "Labels.DEFAULT_SUFFIX")) "" }}
+
 {{/* Get the VIRTUAL_PROTO defined by containers w/ the same vhost, falling back to "http" */}}
 {{ $proto := trim (or (first (groupByKeys $containers "Labels.VIRTUAL_PROTO")) "http") }}
 
@@ -327,6 +331,8 @@ server {
 
 	{{ if (exists (printf "/etc/nginx/vhost.d/%s" $host)) }}
 	include {{ printf "/etc/nginx/vhost.d/%s" $host }};
+    {{ else if (exists (printf "/etc/nginx/vhost.d/default_%s" $default_suffix)) }}
+    include {{ printf "/etc/nginx/vhost.d/default_%s" $default_suffix }};
 	{{ else if (exists "/etc/nginx/vhost.d/default") }}
 	include /etc/nginx/vhost.d/default;
 	{{ end }}
@@ -351,6 +357,8 @@ server {
 		{{ end }}
 		{{ if (exists (printf "/etc/nginx/vhost.d/%s_location" $host)) }}
 		include {{ printf "/etc/nginx/vhost.d/%s_location" $host}};
+        {{ else if (exists (printf "/etc/nginx/vhost.d/default_%s_location" $default_suffix)) }}
+        include {{ printf "/etc/nginx/vhost.d/default_%s_location" $default_suffix }};
 		{{ else if (exists "/etc/nginx/vhost.d/default_location") }}
 		include /etc/nginx/vhost.d/default_location;
 		{{ end }}
