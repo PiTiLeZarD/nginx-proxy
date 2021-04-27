@@ -1,7 +1,7 @@
 version: "2"
 services:
     proxy:
-        image: pitilezard/nginx-proxy-swarm:1.19.9.labels
+        image: pitilezard/nginx-proxy-swarm:1.20.0.labels
         container_name: proxy
         build:
             context: .
