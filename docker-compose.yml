@@ -5,6 +5,8 @@ services:
         container_name: proxy
         build:
             context: .
+            args:
+                - NGINX_VERSION=1.21.0
         ports:
             - "80:80"
         volumes:
