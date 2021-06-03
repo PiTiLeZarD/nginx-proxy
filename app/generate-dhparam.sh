@@ -37,6 +37,7 @@ is being generated in the background.  Once the new dhparam.pem is in place, ngi
 EOT
 
 # Put the default dhparam file in place so we can start immediately
+mkdir -p $(dirname $DHPARAM_FILE)
 cp $PREGEN_DHPARAM_FILE $DHPARAM_FILE
 touch $GEN_LOCKFILE
 
