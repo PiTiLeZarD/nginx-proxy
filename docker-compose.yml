@@ -14,5 +14,5 @@ services:
 
     whoami:
         image: jwilder/whoami
-        environment:
+        labels:
             - VIRTUAL_HOST=whoami.local
