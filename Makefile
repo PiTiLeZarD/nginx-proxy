@@ -14,3 +14,6 @@ test-alpine: update-dependencies
 	test/pytest.sh
 
 test: test-debian test-alpine
+
+build:
+	docker buildx bake --no-cache --push

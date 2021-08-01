@@ -1,4 +1,4 @@
-version: "2"
+version: "3.8"
 services:
     proxy:
         image: pitilezard/nginx-proxy-swarm:1.21.1.labels
@@ -6,7 +6,7 @@ services:
         build:
             context: .
             args:
-                - NGINX_VERSION=1.21.1@sha256:1c70a669bbf07f9862f269162d776c35144b116938d1becb4e4676270cff8f75
+                - NGINX_VERSION=1.21.1@sha256:3f13b4376446cf92b0cb9a5c46ba75d57c41f627c4edb8b635fa47386ea29e20
         ports:
             - "80:80"
         volumes:
