@@ -1,12 +1,12 @@
 version: "3.8"
 services:
     proxy:
-        image: pitilezard/nginx-proxy-swarm:1.21.1.labels
+        image: pitilezard/nginx-proxy-swarm:1.21.3.labels
         container_name: proxy
         build:
             context: .
             args:
-                - NGINX_VERSION=1.21.1
+                - NGINX_VERSION=1.21.3
         ports:
             - "80:80"
         volumes:
