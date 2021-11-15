@@ -6,7 +6,7 @@ services:
         build:
             context: .
             args:
-                - NGINX_VERSION=1.21.3
+                - NGINX_VERSION=1.21.4
         ports:
             - "80:80"
         volumes:
