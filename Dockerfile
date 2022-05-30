@@ -1,8 +1,8 @@
 # setup build arguments for version of dependencies to use
 ARG NGINX_VERSION=
-ARG GO_VERSION=1.16.4
+ARG GO_VERSION=1.18.1
 
-ARG DOCKER_GEN_VERSION=0.7.6
+ARG DOCKER_GEN_VERSION=0.9.0
 ARG FOREGO_VERSION=0.16.1
 
 # Use a specific version of golang to build both binaries
