@@ -1,5 +1,5 @@
 variable "TAG" {
-    default = "1.23.3.labels"
+    default = "1.24.0.labels"
 }
 group "default" {
     targets = ["proxy"]
