@@ -1,9 +1,9 @@
 # setup build arguments for version of dependencies to use
 ARG NGINX_VERSION=
-ARG GO_VERSION=1.18.1
+ARG GO_VERSION=1.21.0
 
-ARG DOCKER_GEN_VERSION=0.9.0
-ARG FOREGO_VERSION=0.16.1
+ARG DOCKER_GEN_VERSION=0.10.6
+ARG FOREGO_VERSION=0.17.2
 
 # Use a specific version of golang to build both binaries
 FROM golang:$GO_VERSION as gobuilder
@@ -25,7 +25,7 @@ RUN tar -xzf sources.tar.gz \
 FROM gobuilder as forego
 
 ARG FOREGO_VERSION
-ADD https://github.com/jwilder/forego/archive/refs/tags/v${FOREGO_VERSION}.tar.gz sources.tar.gz
+ADD https://github.com/nginx-proxy/forego/archive/refs/tags/v${FOREGO_VERSION}.tar.gz sources.tar.gz
 
 ENV GO111MODULE=auto
 
@@ -51,9 +51,10 @@ RUN apt-get update \
     ca-certificates \
     wget \
     cron \
-    python3 python3-pip \
- && pip3 install crossplane \
- && apt-get purge -y python3-pip \
+    python3 python3.11-venv \
+ && python3 -m venv $HOME/.venvs/crossplane \
+ && /root/.venvs/crossplane/bin/pip3 install crossplane \
+ && apt-get purge -y python3.11-venv \
  && apt-get autoremove -y \
  && apt-get clean \
  && rm -r /var/lib/apt/lists/*
