@@ -14,11 +14,19 @@ if not os.path.isfile(SWARM_CONFIG_FILE):
     with open(SWARM_CONFIG_FILE, 'w') as f:
         f.write("http { include ./*.conf; }")
 
+def valid_node(f):
+    if not f['file']:
+        return False
+    if 'node.conf.d' not in f['file']:
+        return False
+    if 'swarm.conf' in f['file']:
+        return False
+    return not 'docker-gen' in f['file']
+
 nginx_config = []
 cache = []
 swarm_config = parse(SWARM_CONFIG_FILE)['config']
-nodes = [f['parsed'] for f in swarm_config if 'node.conf.d' in f['file'] and 'swarm.conf' not in f['file']]
-
+nodes = [f['parsed'] for f in swarm_config if valid_node(f)]
 
 def get_sub_statements(statement, directive):
     for sub_statement in statement['block']:
