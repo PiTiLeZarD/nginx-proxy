@@ -1,10 +1,10 @@
 variable "TAG" {
-    default = "1.25.3.labels"
+    default = "1.27.0.labels"
 }
 group "default" {
     targets = ["proxy"]
 }
 target "proxy" {
     tags = ["pitilezard/nginx-proxy-swarm:${TAG}"]
-    platforms = ["linux/arm64", "linux/amd64"]
+    platforms = ["linux/amd64"]
 }

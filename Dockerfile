@@ -1,12 +1,12 @@
 # setup build arguments for version of dependencies to use
 ARG NGINX_VERSION=
-ARG GO_VERSION=1.21.0
+ARG GO_VERSION=1.22.0
 
-ARG DOCKER_GEN_VERSION=0.10.6
-ARG FOREGO_VERSION=0.17.2
+ARG DOCKER_GEN_VERSION=0.12.0
+ARG FOREGO_VERSION=0.18.1
 
 # Use a specific version of golang to build both binaries
-FROM golang:$GO_VERSION as gobuilder
+FROM --platform=linux/amd64 golang:$GO_VERSION as gobuilder
 
 # Build docker-gen from scratch
 FROM gobuilder as dockergen
@@ -20,7 +20,7 @@ RUN tar -xzf sources.tar.gz \
    && mv docker-gen-* /go/src/github.com/jwilder/docker-gen \
    && cd /go/src/github.com/jwilder/docker-gen \
    && go get -v ./... \
-   && CGO_ENABLED=0 GOOS=linux go build -ldflags "-X main.buildVersion=${DOCKER_GEN_VERSION}" ./cmd/docker-gen
+   && CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags "-X main.buildVersion=${DOCKER_GEN_VERSION}" ./cmd/docker-gen
 
 FROM gobuilder as forego
 
@@ -34,9 +34,9 @@ RUN tar -xzf sources.tar.gz \
    && mv forego-* /go/src/github.com/ddollar/forego \
    && cd /go/src/github.com/ddollar/forego/ \
    && go get -v ./... \
-   && CGO_ENABLED=0 GOOS=linux go build -o forego .
+   && CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o forego .
 
-FROM nginx:${NGINX_VERSION}
+FROM --platform=linux/amd64 nginx:${NGINX_VERSION}
 LABEL maintainer="Jonathan Adami <contact@jadami.com>"
 LABEL creator="Jason Wilder <mail@jasonwilder.com>"
 
