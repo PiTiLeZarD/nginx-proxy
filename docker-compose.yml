@@ -2,12 +2,14 @@ name: nginx-proxy
 
 services:
     proxy:
-        image: pitilezard/nginx-proxy-swarm:1.27.3.labels
+        image: pitilezard/nginx-proxy-swarm:1.28.0.labels
         container_name: proxy
         build:
             context: .
+            platforms:
+                - "linux/amd64"
             args:
-                - NGINX_VERSION=1.27.3
+                - NGINX_VERSION=1.28.0
         ports:
             - "80:80"
         volumes:
